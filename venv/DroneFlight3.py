@@ -26,30 +26,57 @@ tello.streamon()
 def getKeyboardInput():
 
     lr, fb, ud, yv = 0, 0, 0, 0
-
     speed = 50
+    global x, y, yaw, a
+    d = 0
 
-    if kp.getKey("LEFT"): lr = -speed
+    if kp.getKey("LEFT"):
+        lr = -speed
+        d = dInterval
+        a = -180
 
-    elif kp.getKey("RIGHT"): lr = speed
+    elif kp.getKey("RIGHT"):
+        lr = speed
+        d = -dInterval
+        a = 180
 
-    if kp.getKey("UP"): fb = speed
+    if kp.getKey("UP"):
+        fb = speed
+        d = dInterval
+        a = 270
 
-    elif kp.getKey("DOWN"): fb = -speed
+    elif kp.getKey("DOWN"):
+        fb = -speed
+        d = -dInterval
+        a = -90
 
-    if kp.getKey("w"):ud = speed
-
+    if kp.getKey("w"): ud = speed
     elif kp.getKey("s"): ud = -speed
 
-    if kp.getKey("a"):yv = -speed
+    if kp.getKey("a"):
+        yv = -speed
+        yaw += aInterval
 
-    elif kp.getKey("d"): yv = speed
+    elif kp.getKey("d"):
+        yv = speed
+        yaw -= aInterval
 
-    if kp.getKey("q"): tello.land(); sleep(3)
-
+    if kp.getKey("q"):
+        tello.land()
+        time.sleep(3)
     if kp.getKey("e"): tello.takeoff()
 
-    return [lr, fb, ud, yv]
+    if kp.getKey("z"):
+        cv2.imwrite(f'Resources/Images/{time.time()}.jpg', img)
+        time.sleep(0.3)
+
+    time.sleep(interval)
+    a += yaw
+    x += int(d*math.cos(math.radians(a)))
+    y += int(d*math.sin(math.radians(a)))
+
+
+    return [lr, fb, ud, yv, x, y]
 
 def drawPoints(img, points):
     for point in points:
